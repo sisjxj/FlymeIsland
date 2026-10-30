@@ -175,6 +175,11 @@ public final class MainActivity extends Activity {
         try { version = getPackageManager().getPackageInfo(getPackageName(), 0).versionName; }
         catch (PackageManager.NameNotFoundException e) { version = "未知"; }
         label(updates, "Flyme Island · 开源实验版\n当前版本：" + version + "\n项目：sisjxj/FlymeIsland\n许可证：GPL-3.0-only", 14, 0xffcbd5e1);
+        label(updates, "官方免费发布 · 请勿向冒充官方的渠道付款", 16, 0xffffd27d);
+        label(updates, ProjectNotice.SUMMARY, 14, 0xfff5e8cf);
+        button(updates, "查看版权与防冒充收费声明", () -> ProjectNotice.show(this));
+        label(updates, "© 2026 sisjxj（原创部分） · GPL-3.0-only。开源许可允许合规再分发，"
+                + "本项目的免费声明并非对 GPL 权利的额外限制。", 12, 0xff9ca3af);
         TextView updateStatus = label(updates, "点击检查 GitHub 上的最新正式版本。", 13, 0xff9ca3af);
         button(updates, "检查更新", () -> UpdateChecker.check(this, updateStatus));
         button(updates, "打开发布页面", () -> UpdateChecker.open(this, UpdateChecker.RELEASES));
@@ -185,6 +190,7 @@ public final class MainActivity extends Activity {
         addNavigation(shell, new LinearLayout[]{homePage, mediaPage, appearancePage, aboutPage});
         setContentView(shell);
         updateStatus();
+        ProjectNotice.showOnce(this);
     }
 
     private LinearLayout createPage(android.widget.FrameLayout host, String title, String subtitle) {
