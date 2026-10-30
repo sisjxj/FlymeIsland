@@ -6,51 +6,48 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 /**
- * Official, free-of-charge distribution notice. GPL-3.0-only still permits
- * lawful redistribution, modifications, and charging for distribution.
- * This notice is an identity / anti-impersonation warning, not an additional
- * licensing restriction, and never blocks app functionality.
+ * Friendly, truthful attribution and anti-impersonation notice.
+ * An unofficial redistribution warning is not an additional GPL restriction.
  */
 public final class ProjectNotice {
     private static final String PREFS = "flymeisland_notices";
-    private static final String SHOWN_KEY = "official_free_notice_v062_shown";
+    private static final String SHOWN_KEY = "friendly_notice_v063_shown";
 
-    public static final String TITLE = "免费开源 · 防冒充收费提醒";
+    public static final String TITLE = "关于 Flyme Island · 说两句";
     public static final String SUMMARY =
-            "Flyme Island 官方版本免费获取，不收取下载费、激活费或使用费。"
-            + "请认准 GitHub：sisjxj/FlymeIsland，警惕冒充官方的收费链接与虚假授权。";
+            "Flyme Island 是我做的免费开源小项目，官方安装包都放在 GitHub。"
+            + "如果有人说要付费激活、购买授权，先别急着付钱，来仓库看看。";
+
     public static final String DETAILS =
-            "项目：Flyme Island\n"
-            + "原作者 / 维护者：sisjxj\n"
-            + "官方仓库：https://github.com/sisjxj/FlymeIsland\n"
-            + "版权所有 © 2026 sisjxj（项目原创部分）。\n\n"
-            + "【免费声明】维护者在官方 GitHub 免费提供本项目的源代码和公开发布包，"
-            + "不设置付费下载、付费激活或付费解锁。任何自称必须付费才能获得「官方授权」的说法，"
-            + "请先到官方仓库核实。\n\n"
-            + "【防冒充提醒】请警惕以 Flyme Island 官方、维护者名义收款，"
-            + "或擅自删除版权及许可证声明、将修改版冒充官方版本的行为。"
-            + "非官方版本可能经过修改，请自行核对来源与安全性。\n\n"
-            + "【开源许可】本项目采用 GNU GPL-3.0-only。"
-            + "依照该许可证，其他人可以在符合条款的前提下复制、修改和再分发，"
-            + "也可能对分发服务收费。本提醒不改变 GPL 赋予的权利。"
-            + "再分发应遵守版权、许可及相应源码提供要求。\n\n"
-            + "本项目与魅族官方无隶属关系；软件按许可证约定不提供任何担保。";
+            "嗨，感谢你愿意试试 Flyme Island！\n\n"
+            + "这是我自己慢慢做起来的一个开源小项目。"
+            + "源代码和我发布的安装包都能在 GitHub 免费获取，"
+            + "没有什么付费激活码，也不需要买会员才能用。\n\n"
+            + "如果你在其他地方看到了收费的“官方版”或所谓的“授权码”，"
+            + "先别急着付钱，最好来我的仓库核对一下。"
+            + "也请不要把别人的修改版说成是我发布的原版。\n\n"
+            + "官方地址：\nhttps://github.com/sisjxj/FlymeIsland\n\n"
+            + "这个项目采用 GPL-3.0-only 开源协议："
+            + "遵守协议可以修改、分享、再发布，也可以收费提供分发服务。"
+            + "但请按协议保留版权和许可信息，并提供相应源代码。"
+            + "我在 GitHub 免费分享，不等于所有第三方都必须免费分发。\n\n"
+            + "© 2026 sisjxj（项目原创部分）\n"
+            + "这是独立的社区作品，不代表魅族官方，也不提供使用担保。\n\n"
+            + "谢谢支持，祝你用得开心！";
 
     private ProjectNotice() {}
 
-    /** Visible from About at any time; has no mandatory accept/deny step. */
     public static void show(Activity activity) {
         if (activity == null || activity.isFinishing() || activity.isDestroyed()) return;
         new AlertDialog.Builder(activity)
                 .setTitle(TITLE)
                 .setMessage(DETAILS)
-                .setNeutralButton("打开官方 GitHub", (dialog, which) ->
+                .setNeutralButton("去 GitHub 看看", (dialog, which) ->
                         UpdateChecker.open(activity, UpdateChecker.REPOSITORY))
-                .setPositiveButton("知道了", (dialog, which) -> dialog.dismiss())
+                .setPositiveButton("知道啦", (dialog, which) -> dialog.dismiss())
                 .show();
     }
 
-    /** One gentle reminder per installation/version; not shown on every launch. */
     public static void showOnce(Activity activity) {
         if (activity == null || activity.isFinishing() || activity.isDestroyed()) return;
         SharedPreferences prefs = activity.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
