@@ -1,0 +1,17 @@
+name: Publish v0.61 preview
+on:
+  push:
+    branches: [main]
+    paths: [".github/workflows/publish-v061.yml"]
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publish preview release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create v0.61.0 release-staging/FlymeIsland_v0.61_CallLayout-debug.apk --target a691d6baa93ed90f6249db6009b4e287ecafd51f --title "Flyme Island v0.61 预览版" --prerelease --notes-file release-staging/notes.md
