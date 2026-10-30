@@ -19,10 +19,10 @@ public final class ProjectNotice {
             + "如果有人说要付费激活、购买授权，先别急着付钱，来仓库看看。";
 
     public static final String HELLO =
-            "嘿，欢迎来试试 Flyme Island！\\n\\n"
-            + "这是我自己做的免费开源小项目，在 GitHub 就能下载，不需要付费激活。\\n\\n"
+            "嘿，欢迎来试试 Flyme Island！\n\n"
+            + "这是我自己做的免费开源小项目，在 GitHub 就能下载，不需要付费激活。\n\n"
             + "要是遇到号称“官方收费版”的链接，先别急着掏钱，"
-            + "来我的仓库核对一下。\\n\\n"
+            + "来我的仓库核对一下。\n\n"
             + "谢谢支持！";
 
     public static final String DETAILS =
