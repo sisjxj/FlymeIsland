@@ -1,0 +1,26 @@
+name: Hide legacy preview releases (one-time)
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/hide-legacy-releases-once.yml
+permissions:
+  contents: write
+jobs:
+  hide:
+    if: github.repository == 'sisjxj/FlymeIsland'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mark v0.56.0 and v0.61.0 as drafts
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          for version in v0.56.0 v0.61.0; do
+            echo "Converting $version to draft..."
+            gh release edit "$version" --draft
+            gh api "repos/$GH_REPO/releases/tags/$version" --jq '{tag_name,draft,prerelease}'
+          done
+          echo "Confirm v0.62.0 remains public:"
+          gh api "repos/$GH_REPO/releases/tags/v0.62.0" --jq '{tag_name,draft,prerelease}'
