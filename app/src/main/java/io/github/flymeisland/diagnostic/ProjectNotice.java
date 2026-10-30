@@ -18,6 +18,13 @@ public final class ProjectNotice {
             "Flyme Island 是我做的免费开源小项目，官方安装包都放在 GitHub。"
             + "如果有人说要付费激活、购买授权，先别急着付钱，来仓库看看。";
 
+    public static final String HELLO =
+            "嘿，欢迎来试试 Flyme Island！\\n\\n"
+            + "这是我自己做的免费开源小项目，在 GitHub 就能下载，不需要付费激活。\\n\\n"
+            + "要是遇到号称“官方收费版”的链接，先别急着掏钱，"
+            + "来我的仓库核对一下。\\n\\n"
+            + "谢谢支持！";
+
     public static final String DETAILS =
             "嗨，感谢你愿意试试 Flyme Island！\n\n"
             + "这是我自己慢慢做起来的一个开源小项目。"
@@ -53,6 +60,14 @@ public final class ProjectNotice {
         SharedPreferences prefs = activity.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         if (prefs.getBoolean(SHOWN_KEY, false)) return;
         prefs.edit().putBoolean(SHOWN_KEY, true).apply();
-        activity.getWindow().getDecorView().post(() -> show(activity));
+        activity.getWindow().getDecorView().post(() -> {
+            if (activity.isFinishing() || activity.isDestroyed()) return;
+            new AlertDialog.Builder(activity)
+                    .setTitle("谢谢你来试试 Flyme Island")
+                    .setMessage(HELLO)
+                    .setNeutralButton("详细说明", (d, w) -> show(activity))
+                    .setPositiveButton("知道啦", (d, w) -> d.dismiss())
+                    .show();
+        });
     }
 }
