@@ -22,6 +22,7 @@ jobs:
       - run: gradle :app:assembleDebug --no-daemon
       - name: Regression checks
         run: |
+          python3 verification/test_call_notification.py
           python3 verification/test_call_stage_policy.py
           python3 verification/test_call_action_policy.py
           python3 verification/test_expanded_safe_area.py

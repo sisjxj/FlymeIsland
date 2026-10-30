@@ -298,8 +298,7 @@ public final class MusicListenerService extends NotificationListenerService {
 
     @Override public void onNotificationPosted(StatusBarNotification sbn) {
         if (sbn == null) return;
-        if ("com.android.incallui".equals(sbn.getPackageName()) && sbn.getNotification() != null
-                && Notification.CATEGORY_CALL.equals(sbn.getNotification().category)) {
+        if (CallNotification.matches(sbn.getPackageName(), sbn.getNotification())) {
             if (SystemUiAicyClient.enabled(this) && MusicPrefs.callEnabled(this)) SystemUiAicyClient.notifyMessage(this, sbn);
             return;
         }
@@ -335,7 +334,7 @@ public final class MusicListenerService extends NotificationListenerService {
             for (StatusBarNotification item : active) {
                 if (item == null || !key.equals(item.getKey()) || !"com.android.incallui".equals(item.getPackageName())) continue;
                 Notification n = item.getNotification();
-                if (n == null || !Notification.CATEGORY_CALL.equals(n.category) || n.actions == null) return;
+                if (!CallNotification.matches(item.getPackageName(), n) || n.actions == null) return;
                 CallActionPolicy.Kind wanted = "answer".equals(direction) ? CallActionPolicy.Kind.ANSWER
                         : "reject".equals(direction) ? CallActionPolicy.Kind.REJECT
                         : "hangup".equals(direction) ? CallActionPolicy.Kind.HANGUP

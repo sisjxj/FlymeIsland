@@ -226,7 +226,8 @@ public final class CameraIslandLayout extends IslandGestureLayout {
             }
         }
         for (int i = 0; i < getChildCount(); i++) {
-            getChildAt(i).setTranslationY(localTop + (i == 0 ? 0f : (visualH - pillH) * .5f));
+            float offset = i == 0 ? 0f : (visualH - (i == 1 ? pillH : callMediumH)) * .5f;
+            getChildAt(i).setTranslationY(localTop + offset);
         }
         updateInputRegion();
     }

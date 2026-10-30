@@ -14,7 +14,13 @@ final class CallSizeDialog {
             SeekBar slider=new SeekBar(a);slider.setMax(CallSizePrefs.MAX[i]-CallSizePrefs.MIN[i]);slider.setProgress(values[i]-CallSizePrefs.MIN[i]);content.addView(slider);
             slider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){public void onProgressChanged(SeekBar b,int progress,boolean user){if(user){values[index]=CallSizePrefs.MIN[index]+progress;label.setText(labels[index]+"："+values[index]+" dp");}}public void onStartTrackingTouch(SeekBar b){}public void onStopTrackingTouch(SeekBar b){}});
         }
+        int[] offsets=CallLayoutPrefs.get(a);
+        TextView heading=new TextView(a);heading.setText("二级胶囊内容位置（负数向左或上）");content.addView(heading);
+        for(int i=0;i<offsets.length;i++) { final int index=i;TextView label=new TextView(a);content.addView(label);label.setText(CallLayoutPrefs.LABELS[i]+"："+offsets[i]+" dp");
+            SeekBar slider=new SeekBar(a);slider.setMax(CallLayoutPrefs.MAX[i]-CallLayoutPrefs.MIN[i]);slider.setProgress(offsets[i]-CallLayoutPrefs.MIN[i]);content.addView(slider);
+            slider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){public void onProgressChanged(SeekBar b,int progress,boolean user){if(user){offsets[index]=CallLayoutPrefs.MIN[index]+progress;label.setText(CallLayoutPrefs.LABELS[index]+"："+offsets[index]+" dp");}}public void onStartTrackingTouch(SeekBar b){}public void onStopTrackingTouch(SeekBar b){}});
+        }
         ScrollView scroll=new ScrollView(a);scroll.addView(content);
-        new AlertDialog.Builder(a).setTitle("电话胶囊三级尺寸").setView(scroll).setPositiveButton("保存",(dialog,which)->CallSizePrefs.save(a,values)).setNegativeButton("取消",null).show();
+        new AlertDialog.Builder(a).setTitle("电话胶囊三级尺寸").setView(scroll).setPositiveButton("保存",(dialog,which)->{CallSizePrefs.save(a,values);CallLayoutPrefs.save(a,offsets);}).setNegativeButton("取消",null).show();
     }
 }

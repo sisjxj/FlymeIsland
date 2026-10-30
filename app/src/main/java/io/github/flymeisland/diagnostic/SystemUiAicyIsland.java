@@ -127,6 +127,7 @@ public final class SystemUiAicyIsland {
     private static int baseBigW, basePanelHeightLimit;
     private static int callCaps;
     private static int[] callSizes = CallSizePrefs.DEFAULTS.clone();
+    private static int[] callOffsets = new int[6];
     private static LinearLayout callMedium;
     private static boolean callMediumVisible;
     private static boolean previousCallConnected;
@@ -265,6 +266,12 @@ public final class SystemUiAicyIsland {
                     if (messageText != null) calculateExpandedHeight(messageText.getText().toString());
                     if (isExpanded && pendingExit == null && !launchInProgress) morph(true);
                 }
+            }
+            int[] layoutOffsets = intent.getIntArrayExtra(MiniBridgeContract.EXTRA_CALL_LAYOUT);
+            if (layoutOffsets != null && layoutOffsets.length == 6) {
+                int[] bounded = new int[6];
+                for (int i=0;i<6;i++) bounded[i] = SystemUiIslandPrefs.clamp(layoutOffsets[i], CallLayoutPrefs.MIN[i], CallLayoutPrefs.MAX[i]);
+                if (!Arrays.equals(callOffsets,bounded)) { callOffsets=bounded; if (isCurrentCall()) refreshMediaControls(); }
             }
             int[] suppliedStyle = intent.getIntArrayExtra(MiniBridgeContract.EXTRA_WAVE_STYLE);
             if (suppliedStyle != null && suppliedStyle.length == WaveStylePrefs.DEFAULTS.length) {
@@ -1551,7 +1558,14 @@ public final class SystemUiAicyIsland {
         if (callMedium != null) {
             callMedium.removeAllViews();
             if (call) {
-                View spacer = new View(context); callMedium.addView(spacer,new LinearLayout.LayoutParams(0,1,1f));
+                LinearLayout caller = new LinearLayout(context); caller.setOrientation(LinearLayout.VERTICAL); caller.setGravity(Gravity.CENTER_VERTICAL);
+                TextView status=label(context,"正在通话",10,0xffb8c4d6,false); status.setPadding(0,0,0,0);status.setSingleLine(true);caller.addView(status);
+                String callerName = notice.sender == null || notice.sender.trim().isEmpty() ? "通话中" : notice.sender;
+                TextView person=label(context,callerName,11,Color.WHITE,true);person.setPadding(0,0,0,0);person.setSingleLine(true);person.setEllipsize(TextUtils.TruncateAt.END);caller.addView(person);
+                caller.setTranslationX(dp(callOffsets[0])); caller.setTranslationY(dp(callOffsets[1]));
+                int leftWidth = Math.max(0, callSizes[2]/2 - 29);
+                callMedium.addView(caller,new LinearLayout.LayoutParams(dp(leftWidth),-1));
+                View cameraGap = new View(context);callMedium.addView(cameraGap,new LinearLayout.LayoutParams(dp(42),1));
                 if ((callCaps & 8)!=0) addMediumCallControl("免提","speaker_on",notice.key);
                 if ((callCaps & 16)!=0) addMediumCallControl("听筒","speaker_off",notice.key);
                 if ((callCaps & 4)!=0) addMediumCallControl("挂断","hangup",notice.key);
@@ -1573,8 +1587,31 @@ public final class SystemUiAicyIsland {
         addMediaControl("下一首", "next", (mediaActions & android.media.session.PlaybackState.ACTION_SKIP_TO_NEXT)!=0, 0, notice.sourcePackage);
     }
     private static void addMediumCallControl(String title,String action,String key) {
-        TextView button=label(context,title,12,Color.WHITE,true);button.setGravity(Gravity.CENTER);button.setContentDescription(title);
-        callMedium.addView(button,new LinearLayout.LayoutParams(dp(52),-1));
+        FrameLayout button = new FrameLayout(context);
+        button.setContentDescription(title);
+        ImageView icon = new ImageView(context);
+        if ("hangup".equals(action)) {
+            GradientDrawable circle = new GradientDrawable();circle.setShape(GradientDrawable.OVAL);circle.setColor(0xffdc4455);
+            icon.setBackground(circle); icon.setImageResource(android.R.drawable.ic_menu_call);
+            icon.setImageTintList(android.content.res.ColorStateList.valueOf(Color.WHITE));
+            icon.setRotation(135f); icon.setPadding(dp(7),dp(7),dp(7),dp(7));
+        } else {
+            boolean speakerActive = "speaker_off".equals(action);
+            if (speakerActive) {
+                GradientDrawable circle = new GradientDrawable(); circle.setShape(GradientDrawable.OVAL); circle.setColor(0xffeceef1);
+                icon.setBackground(circle);
+            }
+            CallControlIcon speakerIcon = new CallControlIcon("speaker", speakerActive);
+            if (speakerActive) speakerIcon.setColorFilter(new android.graphics.PorterDuffColorFilter(Color.BLACK, android.graphics.PorterDuff.Mode.SRC_IN));
+            icon.setImageDrawable(speakerIcon);
+            icon.setPadding(dp(7),dp(7),dp(7),dp(7));
+            button.setContentDescription(speakerActive ? "免提已开启，点击关闭" : "免提已关闭，点击开启");
+        }
+        icon.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        int offsetIndex = "hangup".equals(action) ? 4 : 2;
+        button.setTranslationX(dp(callOffsets[offsetIndex])); button.setTranslationY(dp(callOffsets[offsetIndex+1]));
+        button.addView(icon,new FrameLayout.LayoutParams(dp(32),dp(32),Gravity.CENTER));
+        callMedium.addView(button,new LinearLayout.LayoutParams(0,-1,1f));
         button.setOnClickListener(v -> sendCallAction(key,action));
     }
     private static void sendCallAction(String key,String action) {

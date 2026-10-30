@@ -137,8 +137,7 @@ public final class SystemUiAicyClient {
     public static void notifyMessage(Context c, StatusBarNotification sbn, boolean restore) {
         if (sbn == null || !enabled(c)) return;
         Notification notification = sbn.getNotification();
-        String cmd = "com.android.incallui".equals(sbn.getPackageName()) && notification != null
-                && Notification.CATEGORY_CALL.equals(notification.category) ? MiniBridgeContract.COMMAND_CALL : commandForPackage(sbn.getPackageName());
+        String cmd = CallNotification.matches(sbn.getPackageName(), notification) ? MiniBridgeContract.COMMAND_CALL : commandForPackage(sbn.getPackageName());
         if (cmd == null || notification == null) return;
 
         KeyguardManager keyguard = c.getSystemService(KeyguardManager.class);
@@ -147,7 +146,7 @@ public final class SystemUiAicyClient {
         String sender = null;
         String body = null;
         byte[] avatar = null;
-        if (MusicPrefs.messagePreview(c)
+        if ((MusicPrefs.messagePreview(c) || MiniBridgeContract.COMMAND_CALL.equals(cmd))
                 && notification.visibility != Notification.VISIBILITY_SECRET
                 && notification.extras != null) {
             try {
@@ -281,6 +280,7 @@ public final class SystemUiAicyClient {
         intent.putExtra(MiniBridgeContract.EXTRA_SENT_AT, SystemClock.elapsedRealtime());
         intent.putExtra(MiniBridgeContract.EXTRA_ISLAND_COMMAND, command);
         if (MiniBridgeContract.COMMAND_CALL.equals(command)) { intent.putExtra(MiniBridgeContract.EXTRA_CALL_CAPS, callCaps); intent.putExtra(MiniBridgeContract.EXTRA_CALL_SIZES, CallSizePrefs.get(c)); }
+        intent.putExtra(MiniBridgeContract.EXTRA_CALL_LAYOUT, CallLayoutPrefs.get(c));
         intent.putExtra(MiniBridgeContract.EXTRA_WAVE_STYLE, WaveStylePrefs.get(c));
         intent.putExtra(MiniBridgeContract.EXTRA_PANEL_SAFE_TOP, SystemUiIslandPrefs.panelSafeTop(c));
         intent.putExtra(MiniBridgeContract.EXTRA_MEDIA_ICON_MODE, MusicPrefs.mediaIconMode(c));

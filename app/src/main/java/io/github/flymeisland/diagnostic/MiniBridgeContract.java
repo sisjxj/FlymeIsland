@@ -42,6 +42,7 @@ public final class MiniBridgeContract {
     public static final String COMMAND_QQ = "QQ";
     public static final String COMMAND_OTHER = "OTHER";
     public static final String COMMAND_CALL = "CALL";
+    public static final String EXTRA_CALL_LAYOUT = "call_layout_v061";
     public static final String EXTRA_CALL_SIZES = "call_sizes_v055";
     public static final String EXTRA_CALL_CAPS = "call_caps_v054";
     public static final String ACTION_CALL_CONTROL = APP + ".bridge.CALL_CONTROL_V052";
