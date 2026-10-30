@@ -1,0 +1,26 @@
+plugins {
+    id 'com.android.application'
+}
+android {
+    namespace 'io.github.flymeisland.diagnostic'
+    compileSdk 36
+    defaultConfig {
+        applicationId 'io.github.flymeisland.diagnostic'
+        minSdk 28
+        targetSdk 35
+        versionCode 61
+        versionName '0.56.0-open-source-preview'
+    }
+    buildTypes {
+        release { minifyEnabled false }
+        debug { minifyEnabled false }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+dependencies {
+    // Compile-time signatures only: real Xposed API is supplied by LSPosed.
+    compileOnly project(':xposed-api-stubs')
+}

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION"/>
+    <queries>
+        <package android:name="com.spotify.music"/>
+        <package android:name="com.tencent.mm"/>
+        <package android:name="com.tencent.mobileqq"/>
+        <package android:name="com.android.systemui"/>
+        <package android:name="com.meizu.voiceassistant"/>
+        <package android:name="com.flyme.systemuitools"/>
+        <package android:name="com.meizu.flyme.launcher"/>
+    </queries>
+    <application
+        android:label="@string/app_name"
+        android:icon="@drawable/ic_island"
+        android:description="@string/module_description"
+        android:allowBackup="false"
+        android:usesCleartextTraffic="false">
+        <activity android:name=".MainActivity" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <service
+            android:name=".MusicListenerService"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService"/>
+            </intent-filter>
+        </service>
+        <service android:name=".AppAudioWaveService" android:exported="false" android:foregroundServiceType="mediaProjection"/>
+        <meta-data android:name="xposedmodule" android:value="true"/>
+        <meta-data android:name="xposeddescription" android:value="系统界面灵动岛：应用通知、音乐和充电"/>
+        <meta-data android:name="xposedminversion" android:value="82"/>
+        <meta-data android:name="xposedscope" android:resource="@array/recommended_scope"/>
+    </application>
+</manifest>

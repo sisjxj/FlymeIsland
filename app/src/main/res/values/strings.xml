@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Flyme Island · 原生灵动岛</string>
+    <string name="module_description">音乐、充电与微信QQ隐私消息胶囊</string>
+    <string-array name="recommended_scope">
+        <item>com.android.systemui</item>
+        <item>com.meizu.voiceassistant</item>
+    </string-array>
+</resources>

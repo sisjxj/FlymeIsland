@@ -1,0 +1,36 @@
+name: Android build
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v4
+      - run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.13'
+      - run: gradle :app:assembleDebug --no-daemon
+      - name: Regression checks
+        run: |
+          python3 verification/test_call_stage_policy.py
+          python3 verification/test_call_action_policy.py
+          python3 verification/test_expanded_safe_area.py
+          python3 verification/test_screen_relay.py
+          python3 verification/test_unlock_replay.py
+          python3 verification/test_camera_flow.py
+          python3 verification/test_media_routing.py
+          python3 verification/test_media_controls.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: FlymeIsland-debug
+          path: app/build/outputs/apk/debug/app-debug.apk
