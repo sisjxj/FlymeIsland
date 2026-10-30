@@ -1,0 +1,59 @@
+name: Publish v0.62 official free notice
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'app/src/main/java/io/github/flymeisland/diagnostic/ProjectNotice.java'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    if: github.repository == 'sisjxj/FlymeIsland'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v4
+      - run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.13'
+      - name: Verify notices and build APK
+        run: |
+          python3 verification/test_project_notice.py
+          gradle :app:assembleDebug --no-daemon
+      - name: Run project regression tests
+        run: |
+          python3 verification/test_call_notification.py
+          python3 verification/test_call_stage_policy.py
+          python3 verification/test_call_action_policy.py
+          python3 verification/test_expanded_safe_area.py
+          python3 verification/test_screen_relay.py
+          python3 verification/test_unlock_replay.py
+          python3 verification/test_camera_flow.py
+          python3 verification/test_media_routing.py
+          python3 verification/test_media_controls.py
+      - name: Prepare signed debug build for release
+        run: |
+          mkdir -p dist
+          cp app/build/outputs/apk/debug/app-debug.apk dist/FlymeIsland_v0.62_FreeOpenSource-debug.apk
+          test -s dist/FlymeIsland_v0.62_FreeOpenSource-debug.apk
+      - name: Publish new v0.62 prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view v0.62.0 >/dev/null 2>&1; then
+            echo "Release v0.62.0 exists; keeping published assets unchanged."
+          else
+            gh release create v0.62.0 dist/FlymeIsland_v0.62_FreeOpenSource-debug.apk \
+              --target "$GITHUB_SHA" \
+              --title "Flyme Island v0.62 免费开源与版权提醒" \
+              --prerelease \
+              --notes-file docs/RELEASE_NOTES_v0.62.0.md
+          fi
